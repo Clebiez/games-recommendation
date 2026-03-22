@@ -44,7 +44,7 @@ class RecommendationGetter:
             on="id",
             how="inner",
         )
-        recommendations["score"] = recommendations["score_summaries"] * 0.6 + recommendations["score_genres"] * 0.4 + (recommendations["total_rating"] / 100) * 0.1
+        recommendations["score"] = recommendations["score_summaries"] * 0.7 + recommendations["score_genres"] * 0.2 + (recommendations["total_rating"] / 100) * 0.1
 
         return recommendations.sort_values('score', ascending=False).head(topN)
 

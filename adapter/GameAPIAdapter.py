@@ -3,7 +3,7 @@ from requests import post
 BASE_API = "https://api.igdb.com/v4"
 LIMIT = 100
 
-GAMES_FIELD = "fields name, summary, total_rating, total_rating_count, first_release_date, game_type, game_status, genres, platforms; where game_type = 0 & total_rating_count > 10;"
+GAMES_FIELD = "fields name, summary, total_rating, total_rating_count, first_release_date, game_type, game_status, genres, platforms; where game_type = 0 & total_rating_count > 5;"
 
 
 class GameApiAdapter:
@@ -52,7 +52,7 @@ class GameApiAdapter:
     def countGames(self):
         return self.post(
             f"{BASE_API}/games/count",
-            "fields *; where game_type = 0 & total_rating_count > 10;",
+            "fields *; where game_type = 0 & total_rating_count > 5;",
         )
 
     def queryGame(self, page: int):

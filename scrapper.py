@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 from adapter.GameAPIAdapter import GameApiAdapter
-from adapter.JsonToCSVAdapter import JsonToCSVAdapter
+from adapter.CSVAdapter import CSVAdapter
 import time
 import pandas as pd
 
@@ -12,12 +12,12 @@ app_client = os.getenv("APP_CLIENT")
 
 def main():
     gameAPI = GameApiAdapter(client_id=app_client, secret_key=secret_key)
-    jsonAdapter = JsonToCSVAdapter()
+    csvAdapter = CSVAdapter()
 
     genres = gameAPI.queryGameGenres()
-    jsonAdapter.write(data=genres, fileName="genres")
+    csvAdapter.write(data=genres, fileName="genres")
     gameStatuses = gameAPI.queryGameStatuses()
-    jsonAdapter.write(data=gameStatuses, fileName="status")
+    csvAdapter.write(data=gameStatuses, fileName="status")
 
     countGames = gameAPI.countGames()
 
@@ -49,7 +49,7 @@ def main():
         ]
     )
 
-    jsonAdapter.write(data=df_games.to_dict(orient="records"), fileName="games")
+    csvAdapter.write(data=df_games.to_dict(orient="records"), fileName="games")
 
 
 if __name__ == "__main__":

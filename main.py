@@ -1,51 +1,79 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
+from adapter.CSVAdapter import CSVAdapter
+from adapter.NumpyBinaryAdapter import NumpyBinaryAdapter
+from time import perf_counter
+
+from models.RecommendationGetter import RecommendationGetter
 import pandas as pd
 
-def getGamesRecommendation(gamesDF, gameIds: list[int], top_n: int = 10):
-    gamesDF = gamesDF.drop_duplicates(subset='id').reset_index(drop=True)
-    tfidf = TfidfVectorizer(stop_words="english")
 
-    tfidf_matrix = tfidf.fit_transform(gamesDF['summary'].fillna('').values.astype('U'))
-    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+def print_section(title: str):
+    line = "=" * 72
+    print(f"\n{line}\n{title}\n{line}")
 
-    if isinstance(gameIds, int):
-        gameIds = [gameIds]
 
-    # Find Game Index by ID
-    indices = pd.Series(gamesDF.index, index=gamesDF['id'])
-    selectedGames = indices.reindex(gameIds)
+def format_for_console(df: pd.DataFrame, columns: list[str], rename_map: dict[str, str] | None = None):
+    formatted = df[columns].copy()
 
-    missingIds = selectedGames[selectedGames.isna()].index.tolist()
-    if missingIds:
-        raise ValueError(f"Unknown game IDs: {missingIds}")
-    # Average similarity scores across all input games to build a combined profile.
-    # Also ponderate based on multiple similarities
-    similarityScores = pd.DataFrame(cosine_sim[selectedGames].mean(axis=0) * 0.8 + cosine_sim[selectedGames].sum(axis=0) * 0.2, columns=["score"])
+    for col in ["total_rating", "score", "score_genres", "score_summaries"]:
+        if col in formatted.columns:
+            formatted[col] = pd.to_numeric(formatted[col], errors="coerce").round(3)
 
-    # Remove the input games from the recommendations, then keep the best matches.
-    gameIndices = (
-        similarityScores
-        .drop(index=selectedGames)
-        .sort_values("score", ascending=False)
-        .head(top_n)
-        .index
-    )
+    if rename_map:
+        formatted = formatted.rename(columns=rename_map)
 
-    recommendations = gamesDF.iloc[gameIndices].copy()
-    recommendations["score"] = similarityScores.loc[gameIndices, "score"].values
-    return recommendations
+    return formatted.to_string(index=False, line_width=220)
+
+
+
 
 
 def main():
-    gamesDF = pd.read_csv('./games.csv')
-    # gameIds = [1942, 9254, 152127, 36198, 109455]
-    gameIds = [1942, 9254, 152127, 136625]
-    print("Input games:")
-    print(gamesDF[gamesDF['id'].isin(gameIds)][["id", "name", "summary", "total_rating"]])
-    recommendations = getGamesRecommendation(gamesDF, gameIds)
-    print("Output games:")
-    print(recommendations[["id", "name", "summary", "total_rating", "score"]])
+    start_time = perf_counter()
+    csvAdapter = CSVAdapter()
+    numpyAdapter = NumpyBinaryAdapter()
+
+    cosinGenres = numpyAdapter.read('cosin_genres')
+    cosinSummaries = numpyAdapter.read('cosin_summary')
+
+    gamesDF = csvAdapter.read('games')
+    gameIds = [7046, 90558, 152127]
+    getter = RecommendationGetter(gamesDF, gameIds, cosin_genres=cosinGenres, cosin_summaries=cosinSummaries)
+
+
+
+    print_section("INPUT GAMES")
+    input_games = gamesDF[gamesDF['id'].isin(gameIds)]
+    print(
+        format_for_console(
+            input_games,
+            ["name", "genres_normalized", "total_rating"],
+            {
+                "name": "Game",
+                "genres_normalized": "Genres",
+                "total_rating": "Rating",
+            },
+        )
+    )
+
+    recommendations = getter.getRecommendations()
+    elapsed_seconds = perf_counter() - start_time
+
+    print_section("RECOMMENDED GAMES")
+    print(
+        format_for_console(
+            recommendations,
+            ["name", "genres_normalized", "total_rating", "score"],
+            {
+                "name": "Game",
+                "genres_normalized": "Genres",
+                "total_rating": "Rating",
+                "score": "MatchScore",
+            },
+        )
+    )
+    print(f"Generation time: {elapsed_seconds:.4f} s")
+
 
 
 if __name__ == "__main__":

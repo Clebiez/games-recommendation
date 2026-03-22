@@ -3,7 +3,9 @@ import pandas as pd
 
 
 @dataclass
-class JsonToCSVAdapter:
+class CSVAdapter:
+    def read(self, fileName: str):
+        return pd.read_csv(f"{fileName}.csv")
     def write(self, data: list, fileName: str):
         df = pd.DataFrame(data)
         df.to_csv(f"{fileName}.csv", encoding="utf-8", index=False)

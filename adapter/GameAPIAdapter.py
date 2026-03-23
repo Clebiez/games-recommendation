@@ -1,9 +1,10 @@
 from requests import post
+import time
 
 BASE_API = "https://api.igdb.com/v4"
 LIMIT = 100
 
-GAMES_FIELD = "fields name, summary, total_rating, total_rating_count, first_release_date, game_type, game_status, genres, platforms; where game_type = 0 & total_rating_count > 5;"
+GAMES_FIELD = "fields name, summary, total_rating, total_rating_count, keywords, game_type, game_status, genres, platforms; where game_type = (0, 4) & total_rating_count > 2;"
 
 
 class GameApiAdapter:
@@ -43,20 +44,49 @@ class GameApiAdapter:
         )
         self.access_token = req.json()["access_token"]
 
+    def iterateOverPages(self, method):
+        i = 0
+        items = []
+
+        while True:
+            print(f"Page {i}: Number of items {len(items)}")
+            lastAnswer = method(i)
+            i += 1
+
+            if len(lastAnswer) == 0:
+                break
+            else:
+                items.extend(lastAnswer)
+            time.sleep(0.25)
+
+        return items
+
     def queryGameStatuses(self):
         return self.post(f"{BASE_API}/game_statuses", "fields *; limit 100;")
+
+    def queryGameKeywords(self, page: int):
+        return self.post(
+            f"{BASE_API}/keywords", f"fields *; limit 100;; offset {page * LIMIT};"
+        )
 
     def queryGameGenres(self):
         return self.post(f"{BASE_API}/genres", "fields *; limit 100;")
 
     def countGames(self):
-        return self.post(
-            f"{BASE_API}/games/count",
-            "fields *; where game_type = 0 & total_rating_count > 5;",
-        )
+        return self.post(f"{BASE_API}/games/count", GAMES_FIELD)
 
     def queryGame(self, page: int):
         return self.post(
             f"{BASE_API}/games",
             f"{GAMES_FIELD} limit {LIMIT}; offset {page * LIMIT};",
         )
+
+    def queryAllGames(self):
+        countGames = self.countGames()
+        print(f"{countGames} to load:")
+        games = self.iterateOverPages(self.queryGame)
+        return games
+
+    def queryAllKeywords(self):
+        keywords = self.iterateOverPages(self.queryGameKeywords)
+        return keywords

@@ -1,4 +1,3 @@
-
 from adapter.CSVAdapter import CSVAdapter
 from adapter.NumpyBinaryAdapter import NumpyBinaryAdapter
 from time import perf_counter
@@ -12,7 +11,9 @@ def print_section(title: str):
     print(f"\n{line}\n{title}\n{line}")
 
 
-def format_for_console(df: pd.DataFrame, columns: list[str], rename_map: dict[str, str] | None = None):
+def format_for_console(
+    df: pd.DataFrame, columns: list[str], rename_map: dict[str, str] | None = None
+):
     formatted = df[columns].copy()
 
     for col in ["total_rating", "score", "score_genres", "score_summaries"]:
@@ -25,25 +26,27 @@ def format_for_console(df: pd.DataFrame, columns: list[str], rename_map: dict[st
     return formatted.to_string(index=False, line_width=220)
 
 
-
-
-
 def main():
     start_time = perf_counter()
     csvAdapter = CSVAdapter()
     numpyAdapter = NumpyBinaryAdapter()
 
-    cosinGenres = numpyAdapter.read('cosin_genres')
-    cosinSummaries = numpyAdapter.read('cosin_summary')
+    cosinGenres = numpyAdapter.read("cosin_genres")
+    cosinSummaries = numpyAdapter.read("cosin_summary")
+    cosinKeywords = numpyAdapter.read("cosin_keywords")
 
-    gamesDF = csvAdapter.read('games')
+    gamesDF = csvAdapter.read("games")
     gameIds = [7046, 90558, 152127]
-    getter = RecommendationGetter(gamesDF, gameIds, cosin_genres=cosinGenres, cosin_summaries=cosinSummaries)
-
-
+    getter = RecommendationGetter(
+        gamesDF,
+        gameIds,
+        cosin_genres=cosinGenres,
+        cosin_summaries=cosinSummaries,
+        cosin_keywords=cosinKeywords,
+    )
 
     print_section("INPUT GAMES")
-    input_games = gamesDF[gamesDF['id'].isin(gameIds)]
+    input_games = gamesDF[gamesDF["id"].isin(gameIds)]
     print(
         format_for_console(
             input_games,
@@ -73,7 +76,6 @@ def main():
         )
     )
     print(f"Generation time: {elapsed_seconds:.4f} s")
-
 
 
 if __name__ == "__main__":

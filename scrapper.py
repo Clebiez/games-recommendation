@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 import os
 from adapter.GameAPIAdapter import GameApiAdapter
 from adapter.CSVAdapter import CSVAdapter
-import time
 import pandas as pd
 
 load_dotenv()  # reads variables from the .env file
@@ -19,21 +18,7 @@ def main():
     gameStatuses = gameAPI.queryGameStatuses()
     csvAdapter.write(data=gameStatuses, fileName="status")
 
-    countGames = gameAPI.countGames()
-
-    print(f"{countGames} to load:")
-    i = 0
-    games = []
-    while True:
-        print(f"Page {i}: Number of games {len(games)}")
-        lastAnswer = gameAPI.queryGame(i)
-        i += 1
-
-        if len(lastAnswer) == 0:
-            break
-        else:
-            games.extend(lastAnswer)
-        time.sleep(0.25)
+    games = gameAPI.queryAllGames()
     print(f"{len(games)} games loaded.")
 
     df_games = pd.DataFrame(games)

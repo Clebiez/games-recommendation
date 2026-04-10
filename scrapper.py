@@ -15,8 +15,6 @@ def main():
 
     genres = gameAPI.queryGameGenres()
     csvAdapter.write(data=genres, fileName="genres")
-    gameStatuses = gameAPI.queryGameStatuses()
-    csvAdapter.write(data=gameStatuses, fileName="status")
 
     games = gameAPI.queryAllGames()
     print(f"{len(games)} games loaded.")
@@ -26,7 +24,7 @@ def main():
         columns={"id": "genre_id", "name": "genre_name"}
     )
     genre_map = df_genres.set_index("genre_id")["genre_name"]
-    df_games["genres_normalized"] = df_games["genres"].apply(
+    df_games["genres"] = df_games["genres"].apply(
         lambda ids: [
             genre_map[id]
             for id in (ids if isinstance(ids, list) else [])

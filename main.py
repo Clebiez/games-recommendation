@@ -1,8 +1,7 @@
 from adapter.CSVAdapter import CSVAdapter
-from adapter.NumpyBinaryAdapter import NumpyBinaryAdapter
 from time import perf_counter
 
-from models.RecommendationGetter import RecommendationGetter
+from models.RecommendationFinder import RecommendationFinder
 import pandas as pd
 
 
@@ -29,20 +28,12 @@ def format_for_console(
 def main():
     start_time = perf_counter()
     csvAdapter = CSVAdapter()
-    numpyAdapter = NumpyBinaryAdapter()
-
-    cosinGenres = numpyAdapter.read("cosin_genres")
-    cosinSummaries = numpyAdapter.read("cosin_summary")
-    cosinKeywords = numpyAdapter.read("cosin_keywords")
 
     gamesDF = csvAdapter.read("games")
     gameIds = [7046, 90558, 152127]
-    getter = RecommendationGetter(
+    getter = RecommendationFinder(
         gamesDF,
         gameIds,
-        cosin_genres=cosinGenres,
-        cosin_summaries=cosinSummaries,
-        cosin_keywords=cosinKeywords,
     )
 
     print_section("INPUT GAMES")
@@ -50,26 +41,27 @@ def main():
     print(
         format_for_console(
             input_games,
-            ["name", "genres_normalized", "total_rating"],
+            ["name", "genres", "total_rating"],
             {
                 "name": "Game",
-                "genres_normalized": "Genres",
+                "genres": "Genres",
                 "total_rating": "Rating",
             },
         )
     )
 
     recommendations = getter.getRecommendations()
+    print(recommendations)
     elapsed_seconds = perf_counter() - start_time
 
     print_section("RECOMMENDED GAMES")
     print(
         format_for_console(
             recommendations,
-            ["name", "genres_normalized", "total_rating", "score"],
+            ["name", "genres", "total_rating", "score"],
             {
                 "name": "Game",
-                "genres_normalized": "Genres",
+                "genres": "Genres",
                 "total_rating": "Rating",
                 "score": "MatchScore",
             },

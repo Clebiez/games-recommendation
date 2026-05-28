@@ -1,3 +1,6 @@
 {
-  "framework": null
+  "rewrites": [
+    { "source": "/search", "destination": "/main.py" },
+    { "source": "/get-recommendations", "destination": "/main.py" }
+  ]
 }

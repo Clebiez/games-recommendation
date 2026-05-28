@@ -38,13 +38,13 @@ class RecommendationResult(BaseModel):
     slug: str | None
 
 
-@app.get("/search", tags=["Search"])
+@app.get("/api/search", tags=["Search"])
 def search(
     q: str = Query(..., min_length=1), limit: int = Query(10, ge=1, le=50)
 ) -> list[GameResult]:
     return gameService.search(q, limit=limit)
 
 
-@app.post("/get-recommendations", tags=["Recommendations"])
+@app.post("/api/get-recommendations", tags=["Recommendations"])
 def get_recommendations(body: RecommendationRequest) -> list[RecommendationResult]:
     return gameService.get_recommendations(body.game_ids)

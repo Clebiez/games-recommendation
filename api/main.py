@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query
 from pathlib import Path
 from pydantic import BaseModel
-
+from fastapi.responses import RedirectResponse
 from infrastructure.CSVAdapter import CSVAdapter
 from domain.GameService import GameService
 

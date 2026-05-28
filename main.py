@@ -1,13 +1,16 @@
 from fastapi import FastAPI, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from pathlib import Path
 from pydantic import BaseModel
 
 from infrastructure.CSVAdapter import CSVAdapter
 from domain.GameService import GameService
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 csvAdapter = CSVAdapter()
 gamesDF = csvAdapter.read("games")
@@ -53,4 +56,4 @@ def get_recommendations(body: RecommendationRequest) -> list[RecommendationResul
 
 @app.get("/", include_in_schema=False)
 def root():
-    return FileResponse("static/index.html")
+    return FileResponse(BASE_DIR / "static" / "index.html")

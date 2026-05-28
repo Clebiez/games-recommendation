@@ -455,32 +455,6 @@ h1 {
     margin-top: 24px;
 }
 
-/* ---- Utilities ---- */
-
-[x-cloak] {
-    display: none !important;
-}
-
-/* ---- Scrollbar (pixel style) ---- */
-
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg);
-    border-left: 2px solid var(--border);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--shadow);
-    border: 2px solid var(--border);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
-}
-
 /* ---- Footer ---- */
 
 .site-footer {
@@ -505,6 +479,32 @@ h1 {
 
 .footer-sep {
     margin: 0 10px;
+}
+
+/* ---- Utilities ---- */
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* ---- Scrollbar (pixel style) ---- */
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+    border-left: 2px solid var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--shadow);
+    border: 2px solid var(--border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
 }
 
 /* ---- Responsive ---- */

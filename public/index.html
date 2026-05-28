@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Recommendations</title>
+    <title>Games Finder</title>
     <link rel="stylesheet" href="/style.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="/app.js"></script>
 </head>
 <body>
 <div class="container" x-data="gameApp()">
-    <h1>🎮 Game Recommendations</h1>
+    <h1>Games Finder</h1>
     <p class="subtitle">Recommendations based on content similarity, not popularity. We analyze genres, keywords and summaries to find games that really match yours.</p>
 
     <!-- Search -->
@@ -56,7 +56,7 @@
     <!-- Recommend button -->
     <button
         class="recommend-btn"
-        :disabled="selectedGames.length < 0 || loading"
+        :disabled="selectedGames.length < 3 || loading"
         @click="getRecommendations()"
     >
         <span x-show="!loading">Get Recommendations (3 games min.)</span>

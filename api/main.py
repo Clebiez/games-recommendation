@@ -48,3 +48,19 @@ def search(
 @app.post("/api/get-recommendations", tags=["Recommendations"])
 def get_recommendations(body: RecommendationRequest) -> list[RecommendationResult]:
     return gameService.get_recommendations(body.game_ids)
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return RedirectResponse("/vercel.svg", status_code=307)
+
+@app.get("/", include_in_schema=False)
+async def favicon():
+    return RedirectResponse("/index.html", status_code=307)
+
+@app.get("/app.js", include_in_schema=False)
+async def favicon():
+    return RedirectResponse("/app.js", status_code=307)
+
+@app.get("/style.css", include_in_schema=False)
+async def favicon():
+    return RedirectResponse("/style.css", status_code=307)

@@ -4,7 +4,7 @@ import time
 BASE_API = "https://api.igdb.com/v4"
 LIMIT = 100
 
-GAMES_FIELD = "fields name, summary, total_rating, total_rating_count, keywords, game_type, game_status, genres, platforms; where game_type = (0, 4) & total_rating_count > 2;"
+GAMES_FIELD = "fields name, slug, summary, total_rating, total_rating_count, keywords, game_type, game_status, genres, platforms, cover.url; where game_type = (0, 4) & total_rating_count > 2;"
 
 
 class GameApiAdapter:

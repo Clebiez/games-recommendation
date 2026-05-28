@@ -1,7 +1,11 @@
 from dotenv import load_dotenv
 import os
-from adapter.GameAPIAdapter import GameApiAdapter
-from adapter.CSVAdapter import CSVAdapter
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from infrastructure.GameAPIAdapter import GameApiAdapter
+from infrastructure.CSVAdapter import CSVAdapter
 import pandas as pd
 
 load_dotenv()  # reads variables from the .env file
@@ -31,6 +35,13 @@ def main():
             if id in genre_map
         ]
     )
+
+    df_games["cover_url"] = df_games["cover"].apply(
+        lambda c: f"https:{c['url'].replace('t_thumb', 't_cover_big')}"
+        if isinstance(c, dict) and "url" in c
+        else None
+    )
+    df_games = df_games.drop(columns=["cover"], errors="ignore")
 
     csvAdapter.write(data=df_games.to_dict(orient="records"), fileName="games")
 

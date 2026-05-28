@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Recommendations</title>
+    <link rel="stylesheet" href="/style.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+<body>
+<div class="container" x-data="gameApp()">
+    <h1>🎮 Game Recommendations</h1>
+    <p class="subtitle">Recommendations based on content similarity, not popularity. We analyze genres, keywords and summaries to find games that really match yours.</p>
+
+    <!-- Search -->
+    <div class="search-box">
+        <input
+            type="text"
+            placeholder="Search for a game..."
+            x-model="query"
+            @input.debounce.300ms="search()"
+            @keydown="handleKeydown($event)"
+            @focus="showResults = searchResults.length > 0"
+            @click.outside="showResults = false"
+        >
+        <div class="search-results" x-show="showResults && searchResults.length > 0" x-cloak>
+            <template x-for="(game, index) in searchResults" :key="game.id">
+                <div class="search-item" :class="{ 'is-active': activeIndex === index }" @click="selectGame(game)" @mouseenter="activeIndex = index">
+                    <img :src="game.cover_url || 'https://placehold.co/50x66/ffffff/111?text=?'" :alt="game.name">
+                    <div class="search-item-info">
+                        <div class="search-item-name" x-text="game.name"></div>
+                        <div class="search-item-genres" x-text="formatGenres(game.genres)"></div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Selected games -->
+    <template x-if="selectedGames.length > 0">
+        <div>
+            <div class="section-title">Selected games (<span x-text="selectedGames.length"></span>) <button class="clear-btn" @click="selectedGames = []; recommendations = []; hasSearched = false">Clear all</button></div>
+            <div class="selected-games">
+                <template x-for="game in selectedGames" :key="game.id">
+                    <div class="selected-chip">
+                        <img :src="game.cover_url || 'https://placehold.co/32x42/ffffff/111?text=?'" :alt="game.name">
+                        <span x-text="game.name"></span>
+                        <button class="chip-remove" @click="removeGame(game.id)">&times;</button>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- Recommend button -->
+    <button
+        class="recommend-btn"
+        :disabled="selectedGames.length < 0 || loading"
+        @click="getRecommendations()"
+    >
+        <span x-show="!loading">Get Recommendations (3 games min.)</span>
+        <span x-show="loading"><span class="spinner"></span> Finding similar games...</span>
+    </button>
+
+    <!-- Recommendations -->
+    <template x-if="recommendations.length > 0">
+        <div>
+            <div class="section-title">Recommended for you</div>
+            <div class="recommendations" :class="{ 'is-loading': loading }">
+                <template x-for="game in recommendations" :key="game.id">
+                    <div class="game-card">
+                        <img :src="game.cover_url || 'https://placehold.co/300x200/ffffff/111?text=No+Cover'" :alt="game.name">
+                        <div class="game-card-body">
+                            <div class="game-card-name" x-text="game.name"></div>
+                            <div class="game-card-genres" x-text="formatGenres(game.genres).split(', ').join(' — ')"></div>
+                            <div class="game-card-summary" x-text="truncate(game.summary, 150)"></div>
+                            <div class="game-card-meta">
+                                <span class="rating"><span class="star">★</span> <span x-text="game.total_rating.toFixed(1)"></span></span>
+                                <span class="match-score" x-text="(game.score * 100).toFixed(0) + '% match'"></span>
+                                <a class="igdb-link" :href="igdbUrl(game)" target="_blank" rel="noopener">IGDB <span class="igdb-arrow">→</span></a>
+                                <button class="add-btn" @click="selectGame(game); getRecommendations()">+ Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <template x-if="!loading && recommendations.length === 0 && hasSearched">
+        <div class="empty-state">No recommendations found. Try different games.</div>
+    </template>
+</div>
+
+<footer class="site-footer">
+    <a href="https://clebiez.com" target="_blank" rel="noopener">clebiez.com</a>
+    <span class="footer-sep">•</span>
+    <a href="https://github.com/Clebiez/games-recommendation" target="_blank" rel="noopener">GitHub ↗</a>
+</footer>
+</body>
+</html>

@@ -1,7 +1,8 @@
 {
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/search(.*)", "dest": "/main.py" },
-    { "src": "/get-recommendations", "dest": "/main.py" }
+  "builds": [
+    { "src": "main.py", "use": "@vercel/python" }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/main.py" }
   ]
 }

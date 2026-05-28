@@ -1,6 +1,7 @@
 {
-  "rewrites": [
-    { "source": "/search", "destination": "/main.py" },
-    { "source": "/get-recommendations", "destination": "/main.py" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/search(.*)", "dest": "/main.py" },
+    { "src": "/get-recommendations", "dest": "/main.py" }
   ]
 }

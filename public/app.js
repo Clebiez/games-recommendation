@@ -36,7 +36,7 @@ function gameApp() {
                 this.activeIndex = -1;
                 return;
             }
-            const res = await fetch(`/search?q=${encodeURIComponent(this.query)}&limit=8`);
+            const res = await fetch(`/api/search?q=${encodeURIComponent(this.query)}&limit=8`);
             this.searchResults = await res.json();
             this.showResults = true;
             this.activeIndex = -1;
@@ -93,7 +93,7 @@ function gameApp() {
             this.loading = true;
             this.hasSearched = true;
             const ids = this.selectedGames.map(g => g.id);
-            const res = await fetch('/get-recommendations', {
+            const res = await fetch('/api/get-recommendations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ game_ids: ids })

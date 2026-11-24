@@ -2,6 +2,10 @@
 
 Content-based game recommendation engine using TF-IDF and cosine similarity on genres, keywords, and summaries from IGDB data.
 
+Demo: https://gamesfinder.clebiez.com/
+
+> The infra is kept minimal in order to be eco-friendly. Expect latency at the first load is normal :)
+
 ## Requirements
 
 - Python 3.14+
